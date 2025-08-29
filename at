@@ -11,7 +11,7 @@ local function send(msg)
 end
 
 -- Başlangıç at listesi (4 at)
-local STARTING_HORSES = {"🐴1","🐴2","🐴3","🐴4"}
+local STARTING_HORSES = {"🐴1","🐴2","🐴3",}
 local TRACK_LENGTH = 10 -- pist uzunluğu
 local FRAME_DELAY = 5   -- frame gecikmesi
 local running = false
