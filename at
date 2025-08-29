@@ -1,4 +1,4 @@
---// Horse Race with Casino Style GUI 🐴🚩🎰
+--// Horse Race Show 🐴🚩🎰 + STOP Butonu
 local Players = game:GetService("Players")
 local TextChatService = game:GetService("TextChatService")
 local player = Players.LocalPlayer
@@ -8,87 +8,112 @@ local channel = TextChatService.TextChannels.RBXGeneral
 local screenGui = Instance.new("ScreenGui")
 screenGui.Parent = player:WaitForChild("PlayerGui")
 
-local button = Instance.new("TextButton")
-button.Size = UDim2.new(0, 180, 0, 60)
-button.Position = UDim2.new(0.5, -90, 0.8, 0)
-button.BackgroundColor3 = Color3.fromRGB(20, 20, 20) -- siyah
-button.TextColor3 = Color3.fromRGB(255, 215, 0) -- altın sarısı
-button.Text = "🎰 Start Race 🎲"
-button.Font = Enum.Font.Fantasy
-button.TextSize = 22
-button.Parent = screenGui
-button.AutoButtonColor = true
-button.BorderSizePixel = 0
+-- Start buton
+local startBtn = Instance.new("TextButton")
+startBtn.Size = UDim2.new(0, 200, 0, 70)
+startBtn.Position = UDim2.new(0.5, -220, 0.8, 0)
+startBtn.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+startBtn.TextColor3 = Color3.fromRGB(255, 223, 0)
+startBtn.Text = "🎰 START RACE 🎲"
+startBtn.Font = Enum.Font.GothamBold
+startBtn.TextSize = 26
+startBtn.Parent = screenGui
+startBtn.AutoButtonColor = false
+startBtn.BorderSizePixel = 0
 
--- Kenarları yuvarlak + altın glow efekti
-local UICorner = Instance.new("UICorner")
-UICorner.CornerRadius = UDim.new(0, 20)
-UICorner.Parent = button
+local corner1 = Instance.new("UICorner")
+corner1.CornerRadius = UDim.new(0, 25)
+corner1.Parent = startBtn
 
-local UIStroke = Instance.new("UIStroke")
-UIStroke.Thickness = 3
-UIStroke.Color = Color3.fromRGB(255, 215, 0) -- altın kenar
-UIStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-UIStroke.Parent = button
+local stroke1 = Instance.new("UIStroke")
+stroke1.Thickness = 4
+stroke1.Color = Color3.fromRGB(255, 215, 0)
+stroke1.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+stroke1.Parent = startBtn
+
+-- Stop buton
+local stopBtn = Instance.new("TextButton")
+stopBtn.Size = UDim2.new(0, 200, 0, 70)
+stopBtn.Position = UDim2.new(0.5, 20, 0.8, 0)
+stopBtn.BackgroundColor3 = Color3.fromRGB(60, 0, 0)
+stopBtn.TextColor3 = Color3.fromRGB(255, 100, 100)
+stopBtn.Text = "🛑 STOP RACE"
+stopBtn.Font = Enum.Font.GothamBold
+stopBtn.TextSize = 26
+stopBtn.Parent = screenGui
+stopBtn.AutoButtonColor = false
+stopBtn.BorderSizePixel = 0
+
+local corner2 = Instance.new("UICorner")
+corner2.CornerRadius = UDim.new(0, 25)
+corner2.Parent = stopBtn
+
+local stroke2 = Instance.new("UIStroke")
+stroke2.Thickness = 4
+stroke2.Color = Color3.fromRGB(200, 0, 0)
+stroke2.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+stroke2.Parent = stopBtn
+
+-- Chat helper
+local function send(msg)
+	channel:SendAsync(msg)
+end
+
+-- Global kontrol
+local running = false
 
 -- Yarış fonksiyonu
 local function startRace()
-	button.Visible = false
+	if running then return end
+	running = true
+
 	local HORSES = {"🐴1","🐴2","🐴3","🐴4","🐴5"}
-	local START_DISTANCE = 20
-	local DELAY = 5
+	local TRACK_LENGTH = 10
+	local positions = {}
 
-	local function send(msg)
-		channel:SendAsync(msg)
+	for i = 1,#HORSES do
+		positions[i] = TRACK_LENGTH
 	end
 
-	send("🏁 Horse Race Başlıyor! 🐎🚩")
+	send("🏁Horseracing STARTS!🐎🚩")
 
-	-- Eleme turu
-	local activeHorses = {unpack(HORSES)}
-	while #activeHorses > 2 do
-		task.wait(DELAY)
-
-		local eliminatedIndex = math.random(1,#activeHorses)
-		local eliminatedHorse = table.remove(activeHorses, eliminatedIndex)
-
-		send(eliminatedHorse .. " Eliminated 💀")
-		send("Kalan Atlar: " .. table.concat(activeHorses, " "))
-	end
-
-	-- Final
-	send("🔥 Final Başlıyor! " .. activeHorses[1] .. " vs " .. activeHorses[2])
-
-	local distances = {START_DISTANCE, START_DISTANCE}
-	local finished = false
 	local winner = nil
 
-	while not finished do
-		task.wait(DELAY)
+	while running and not winner do
+		task.wait(5)
 
-		for i = 1,2 do
-			distances[i] = math.max(0, distances[i] - math.random(1,2))
-			if distances[i] <= 0 and not finished then
-				finished = true
-				winner = activeHorses[i]
+		-- Atların ilerlemesi
+		for i = 1,#HORSES do
+			if positions[i] > 0 then
+				positions[i] = math.max(0, positions[i] - math.random(1,3))
+				if positions[i] <= 0 and not winner then
+					winner = HORSES[i]
+				end
 			end
 		end
 
 		-- Pist çiz
 		local lines = {}
-		for i = 1,2 do
-			local track = string.rep("_", distances[i])
-			table.insert(lines, activeHorses[i] .. " " .. track .. "🚩")
+		for i = 1,#HORSES do
+			local track = string.rep("_", positions[i])
+			table.insert(lines, HORSES[i] .. " " .. track .. "🚩")
 		end
 		send(table.concat(lines, "\n"))
 	end
 
-	if winner then
+	elseif winner then
 		send("🏆 " .. winner .. " WINS THE RACE!!! 🏆")
 	end
 
-	task.wait(5)
-	button.Visible = true
+	running = false
 end
 
-button.MouseButton1Click:Connect(startRace)
+-- Stop fonksiyonu
+local function stopRace()
+	if running then
+		running = false
+	end
+end
+
+startBtn.MouseButton1Click:Connect(startRace)
+stopBtn.MouseButton1Click:Connect(stopRace)
