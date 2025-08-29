@@ -1,4 +1,4 @@
--- Horse Race GUI Script
+-- Horse Race GUI Script (Sessiz elenme)
 local Players = game:GetService("Players")
 local TextChatService = game:GetService("TextChatService")
 local player = Players.LocalPlayer
@@ -10,10 +10,10 @@ local function send(msg)
 	channel:SendAsync(msg)
 end
 
--- At listesi
-local HORSES = {"🐴1","🐴2","🐴3","🐴4","🐴5"}
-local TRACK_LENGTH = 5 -- pist uzunluğu
-local FRAME_DELAY = 5 -- her frame gecikme
+-- Başlangıç at listesi
+local STARTING_HORSES = {"🐴1","🐴2","🐴3","🐴4","🐴5"}
+local TRACK_LENGTH = 6 -- pist uzunluğu
+local FRAME_DELAY = 4 -- frame gecikmesi
 local running = false
 
 -- Karıştırma fonksiyonu
@@ -28,11 +28,13 @@ end
 local function startRace()
 	if running then return end
 	running = true
+
+	local HORSES = table.clone(STARTING_HORSES)
 	local length = TRACK_LENGTH
 
-	send("🏁Horseracing STARTS!!!🐎🚩")
+	send("🏁Horseracing STARTS🐎🚩")
 
-	while running and length > 0 do
+	while running and #HORSES > 1 and length > 0 do
 		task.wait(FRAME_DELAY)
 
 		-- Atları karıştır
@@ -44,12 +46,16 @@ local function startRace()
 		send(line .. track .. "🚩")
 
 		length -= 1
+
+		-- Her turda sondaki at sessizce elenir
+		if #HORSES > 1 then
+			table.remove(HORSES)
+		end
 	end
 
-	if running then
-		-- Kazanan en soldaki at
-		local winner = HORSES[1]
-		send("🏆 " .. winner .. " WINS THE RACE!!! 🏆")
+	-- Kazanan tek kalan at
+	if #HORSES == 1 then
+		send("🏆 " .. HORSES[1] .. " WINS THE RACE!!! 🏆")
 	end
 
 	running = false
@@ -70,10 +76,7 @@ button.TextScaled = true
 button.Font = Enum.Font.FredokaOne
 button.TextColor3 = Color3.fromRGB(0,0,0)
 button.Parent = screenGui
-button.AutoButtonColor = true
 button.BorderSizePixel = 0
-button.BackgroundTransparency = 0
-button.TextStrokeTransparency = 0.3
 
 -- Buton tıklandığında yarışı başlat
 button.MouseButton1Click:Connect(function()
