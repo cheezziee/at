@@ -1,4 +1,4 @@
--- Horse Race GUI Script (çekişmeli + Final Duel, 3 at, · yerine pist + aralıklı atlar)
+-- Horse Race GUI Script (1 çekişmeli round + Final Duel, 3 at, · yerine pist + aralıklı atlar)
 local Players = game:GetService("Players")
 local TextChatService = game:GetService("TextChatService")
 local player = Players.LocalPlayer
@@ -51,8 +51,8 @@ local function startRace()
 
 		length -= 1
 
-		-- İlk 2 round: sadece çekişme
-		if round <= 2 then
+		-- İlk round: sadece çekişme
+		if round == 1 then
 			continue
 		end
 
