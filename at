@@ -1,4 +1,4 @@
--- Horse Race GUI Script (Final Duel Efektli)
+-- Horse Race GUI Script (çekişmeli + Final Duel, 5 at, · yerine _ + aralıklı atlar)
 local Players = game:GetService("Players")
 local TextChatService = game:GetService("TextChatService")
 local player = Players.LocalPlayer
@@ -10,9 +10,9 @@ local function send(msg)
 	channel:SendAsync(msg)
 end
 
--- Başlangıç at listesi (3 at)
-local STARTING_HORSES = {"🐴1","🐴2","🐴3"}
-local TRACK_LENGTH = 15 -- pist uzunluğu
+-- Başlangıç at listesi (5 at)
+local STARTING_HORSES = {"🐴1","🐴2","🐴3","🐴4","🐴5"}
+local TRACK_LENGTH = 10 -- pist uzunluğu
 local FRAME_DELAY = 4   -- frame gecikmesi
 local running = false
 
@@ -44,15 +44,15 @@ local function startRace()
 		-- Atları karıştır
 		shuffle(HORSES)
 
-		-- Pist çiz
-		local line = table.concat(HORSES, "")
-		local track = string.rep("_", length)
-		send(line .. track .. "🚩")
+		-- Pist çiz (atlar aralıklı)
+		local line = table.concat(HORSES, " ")
+		local track = string.rep("·", length)
+		send(line .. " " .. track .. "🚩")
 
 		length -= 1
 
-		-- İlk 3 round: sadece çekişme
-		if round <= 3 then
+		-- İlk 2 round: sadece çekişme
+		if round <= 2 then
 			continue
 		end
 
@@ -61,7 +61,7 @@ local function startRace()
 			if not finalDuel then
 				finalDuel = true
 				finalRounds = 0
-				send("🔥🔥 FINAL DUEL STARTS NOW 🔥🔥")
+				send("⚔️ FINAL DUEL STARTS NOW ⚔️")
 			end
 
 			finalRounds += 1
@@ -91,8 +91,8 @@ screenGui.ResetOnSpawn = false
 screenGui.Parent = playerGui
 
 local button = Instance.new("TextButton")
-button.Size = UDim2.new(0, 140, 0, 50)
-button.Position = UDim2.new(1, -160, 1, -70) -- sağ alt köşe
+button.Size = UDim2.new(0, 160, 0, 55)
+button.Position = UDim2.new(1, -180, 1, -80) -- sağ alt köşe
 button.BackgroundColor3 = Color3.fromRGB(255, 215, 0) -- altın renk
 button.Text = "🏇 Start Race"
 button.TextScaled = true
