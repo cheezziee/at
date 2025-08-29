@@ -4,9 +4,14 @@ local TextChatService = game:GetService("TextChatService")
 local player = Players.LocalPlayer
 local channel = TextChatService.TextChannels.RBXGeneral
 
--- GUI
+-- GUI'yi güvenli şekilde oluştur
+local player = game.Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui") -- hazır olana kadar bekler
+
 local screenGui = Instance.new("ScreenGui")
-screenGui.Parent = player:WaitForChild("PlayerGui")
+screenGui.Name = "HorseRaceGui"
+screenGui.ResetOnSpawn = false -- spawn olunca silinmesin
+screenGui.Parent = playerGui
 
 -- Start buton
 local startBtn = Instance.new("TextButton")
