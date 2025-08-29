@@ -1,65 +1,94 @@
---// Horse Race 2-Stage 🐴🚩
--- İlk önce 5 at başlar, her tur bir at elenir
--- Son 2 at kalınca gerçek yarış başlar ve finish çizgisine ulaşırlar
-
+--// Horse Race with Casino Style GUI 🐴🚩🎰
+local Players = game:GetService("Players")
 local TextChatService = game:GetService("TextChatService")
+local player = Players.LocalPlayer
 local channel = TextChatService.TextChannels.RBXGeneral
 
-local HORSES = {"🐴1","🐴2","🐴3","🐴4","🐴5"}
-local START_DISTANCE = 20 -- final turu mesafe
-local DELAY = 1 -- frame süresi
+-- GUI
+local screenGui = Instance.new("ScreenGui")
+screenGui.Parent = player:WaitForChild("PlayerGui")
 
-local function send(msg)
-	channel:SendAsync(msg)
-end
+local button = Instance.new("TextButton")
+button.Size = UDim2.new(0, 180, 0, 60)
+button.Position = UDim2.new(0.5, -90, 0.8, 0)
+button.BackgroundColor3 = Color3.fromRGB(20, 20, 20) -- siyah
+button.TextColor3 = Color3.fromRGB(255, 215, 0) -- altın sarısı
+button.Text = "🎰 Start Race 🎲"
+button.Font = Enum.Font.Fantasy
+button.TextSize = 22
+button.Parent = screenGui
+button.AutoButtonColor = true
+button.BorderSizePixel = 0
 
--- Başlatma
-send("🏁 Horse Race Başlıyor! 🐎🚩")
+-- Kenarları yuvarlak + altın glow efekti
+local UICorner = Instance.new("UICorner")
+UICorner.CornerRadius = UDim.new(0, 20)
+UICorner.Parent = button
 
--- Eleme turu
-local activeHorses = {unpack(HORSES)}
-while #activeHorses > 2 do
-	task.wait(DELAY)
+local UIStroke = Instance.new("UIStroke")
+UIStroke.Thickness = 3
+UIStroke.Color = Color3.fromRGB(255, 215, 0) -- altın kenar
+UIStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+UIStroke.Parent = button
 
-	-- Rastgele bir atı ele
-	local eliminatedIndex = math.random(1,#activeHorses)
-	local eliminatedHorse = table.remove(activeHorses, eliminatedIndex)
+-- Yarış fonksiyonu
+local function startRace()
+	button.Visible = false
+	local HORSES = {"🐴1","🐴2","🐴3","🐴4","🐴5"}
+	local START_DISTANCE = 20
+	local DELAY = 5
 
-	send(eliminatedHorse .. " Eliminated 💀")
+	local function send(msg)
+		channel:SendAsync(msg)
+	end
 
-	-- Kalan atları göster
-	send("Kalan Atlar: " .. table.concat(activeHorses, " "))
-end
+	send("🏁 Horse Race Başlıyor! 🐎🚩")
 
--- Final turu
-send("🔥 Final Başlıyor! " .. activeHorses[1] .. " vs " .. activeHorses[2])
+	-- Eleme turu
+	local activeHorses = {unpack(HORSES)}
+	while #activeHorses > 2 do
+		task.wait(DELAY)
 
-local distances = {START_DISTANCE, START_DISTANCE}
-local finished = false
-local winner = nil
+		local eliminatedIndex = math.random(1,#activeHorses)
+		local eliminatedHorse = table.remove(activeHorses, eliminatedIndex)
 
-while not finished do
-	task.wait(DELAY)
+		send(eliminatedHorse .. " Eliminated 💀")
+		send("Kalan Atlar: " .. table.concat(activeHorses, " "))
+	end
 
-	-- İki at da mesafeden ilerler
-	for i = 1,2 do
-		distances[i] = math.max(0, distances[i] - math.random(1,2))
-		if distances[i] <= 0 and not finished then
-			finished = true
-			winner = activeHorses[i]
+	-- Final
+	send("🔥 Final Başlıyor! " .. activeHorses[1] .. " vs " .. activeHorses[2])
+
+	local distances = {START_DISTANCE, START_DISTANCE}
+	local finished = false
+	local winner = nil
+
+	while not finished do
+		task.wait(DELAY)
+
+		for i = 1,2 do
+			distances[i] = math.max(0, distances[i] - math.random(1,2))
+			if distances[i] <= 0 and not finished then
+				finished = true
+				winner = activeHorses[i]
+			end
 		end
+
+		-- Pist çiz
+		local lines = {}
+		for i = 1,2 do
+			local track = string.rep("_", distances[i])
+			table.insert(lines, activeHorses[i] .. " " .. track .. "🚩")
+		end
+		send(table.concat(lines, "\n"))
 	end
 
-	-- Pist çiz
-	local lines = {}
-	for i = 1,2 do
-		local track = string.rep("_", distances[i])
-		table.insert(lines, activeHorses[i] .. " " .. track .. "🚩")
+	if winner then
+		send("🏆 " .. winner .. " WINS THE RACE!!! 🏆")
 	end
-	send(table.concat(lines, "\n"))
+
+	task.wait(5)
+	button.Visible = true
 end
 
--- Kazanan
-if winner then
-	send("🏆 " .. winner .. " WINS THE RACE!!! 🏆")
-end
+button.MouseButton1Click:Connect(startRace)
