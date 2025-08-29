@@ -1,4 +1,4 @@
--- Horse Race GUI Script (çekişmeli + Final Duel, 5 at, · yerine _ + aralıklı atlar)
+-- Horse Race GUI Script (çekişmeli + Final Duel, 3 at, · yerine pist + aralıklı atlar)
 local Players = game:GetService("Players")
 local TextChatService = game:GetService("TextChatService")
 local player = Players.LocalPlayer
@@ -10,8 +10,8 @@ local function send(msg)
 	channel:SendAsync(msg)
 end
 
--- Başlangıç at listesi (5 at)
-local STARTING_HORSES = {"🐴1","🐴2","🐴3","🐴4","🐴5"}
+-- Başlangıç at listesi (3 at)
+local STARTING_HORSES = {"🐴1","🐴2","🐴3"}
 local TRACK_LENGTH = 10 -- pist uzunluğu
 local FRAME_DELAY = 4   -- frame gecikmesi
 local running = false
@@ -35,7 +35,7 @@ local function startRace()
 	local finalDuel = false
 	local finalRounds = 0
 
-	send("🏁🐎Horseracing STARTS🐎🚩")
+	send("🏁🐎Horseracing starts🐎🚩")
 
 	while running and #HORSES > 1 and length > 0 do
 		task.wait(FRAME_DELAY)
@@ -61,7 +61,7 @@ local function startRace()
 			if not finalDuel then
 				finalDuel = true
 				finalRounds = 0
-				send("⚔️ FINAL DUEL STARTS NOW ⚔️")
+				send("🔥Final Duel🔥")
 			end
 
 			finalRounds += 1
