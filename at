@@ -1,4 +1,4 @@
--- Horse Race GUI Script (3 atlı versiyon, sessiz elenme)
+-- Horse Race GUI Script (Final Duel Efektli)
 local Players = game:GetService("Players")
 local TextChatService = game:GetService("TextChatService")
 local player = Players.LocalPlayer
@@ -13,7 +13,7 @@ end
 -- Başlangıç at listesi (3 at)
 local STARTING_HORSES = {"🐴1","🐴2","🐴3"}
 local TRACK_LENGTH = 15 -- pist uzunluğu
-local FRAME_DELAY = 4 -- frame gecikmesi
+local FRAME_DELAY = 4   -- frame gecikmesi
 local running = false
 
 -- Karıştırma fonksiyonu
@@ -31,11 +31,15 @@ local function startRace()
 
 	local HORSES = table.clone(STARTING_HORSES)
 	local length = TRACK_LENGTH
+	local round = 0
+	local finalDuel = false
+	local finalRounds = 0
 
 	send("🏁🐎Horseracing STARTS🐎🚩")
 
 	while running and #HORSES > 1 and length > 0 do
 		task.wait(FRAME_DELAY)
+		round += 1
 
 		-- Atları karıştır
 		shuffle(HORSES)
@@ -47,7 +51,26 @@ local function startRace()
 
 		length -= 1
 
-		-- Her turda sondaki at sessizce elenir
+		-- İlk 3 round: sadece çekişme
+		if round <= 3 then
+			continue
+		end
+
+		-- Son 2 at kalınca Final Duel başlat
+		if #HORSES == 2 then
+			if not finalDuel then
+				finalDuel = true
+				finalRounds = 0
+				send("🔥🔥 FINAL DUEL STARTS NOW 🔥🔥")
+			end
+
+			finalRounds += 1
+			if finalRounds < 3 then
+				continue
+			end
+		end
+
+		-- Eğer 2'den fazla varsa veya final round tamamlandıysa eleme yap
 		if #HORSES > 1 then
 			table.remove(HORSES)
 		end
