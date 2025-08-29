@@ -1,4 +1,4 @@
--- Horse Race GUI Script (Sessiz elenme)
+-- Horse Race GUI Script (3 atlı versiyon, sessiz elenme)
 local Players = game:GetService("Players")
 local TextChatService = game:GetService("TextChatService")
 local player = Players.LocalPlayer
@@ -10,10 +10,10 @@ local function send(msg)
 	channel:SendAsync(msg)
 end
 
--- Başlangıç at listesi
+-- Başlangıç at listesi (3 at)
 local STARTING_HORSES = {"🐴1","🐴2","🐴3"}
-local TRACK_LENGTH = 10 -- pist uzunluğu
-local FRAME_DELAY = 4.3 -- frame gecikmesi
+local TRACK_LENGTH = 15 -- pist uzunluğu
+local FRAME_DELAY = 4 -- frame gecikmesi
 local running = false
 
 -- Karıştırma fonksiyonu
@@ -32,7 +32,7 @@ local function startRace()
 	local HORSES = table.clone(STARTING_HORSES)
 	local length = TRACK_LENGTH
 
-	send("🏁Horseracing STARTS🐎🚩")
+	send("🏁🐎Horseracing STARTS🐎🚩")
 
 	while running and #HORSES > 1 and length > 0 do
 		task.wait(FRAME_DELAY)
