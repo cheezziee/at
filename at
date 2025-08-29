@@ -1,4 +1,4 @@
--- Horse Race GUI Script (1 çekişmeli round + Final Duel, 3 at, · yerine pist + aralıklı atlar)
+-- Horse Race GUI Script (4 at + final duel)
 local Players = game:GetService("Players")
 local TextChatService = game:GetService("TextChatService")
 local player = Players.LocalPlayer
@@ -10,10 +10,10 @@ local function send(msg)
 	channel:SendAsync(msg)
 end
 
--- Başlangıç at listesi (3 at)
-local STARTING_HORSES = {"🐴1","🐴2","🐴3"}
+-- Başlangıç at listesi (4 at)
+local STARTING_HORSES = {"🐴1","🐴2","🐴3","🐴4"}
 local TRACK_LENGTH = 10 -- pist uzunluğu
-local FRAME_DELAY = 4   -- frame gecikmesi
+local FRAME_DELAY = 5   -- frame gecikmesi
 local running = false
 
 -- Karıştırma fonksiyonu
@@ -31,15 +31,13 @@ local function startRace()
 
 	local HORSES = table.clone(STARTING_HORSES)
 	local length = TRACK_LENGTH
-	local round = 0
 	local finalDuel = false
 	local finalRounds = 0
 
-	send("🏁🐎Horseracing starts🐎🚩")
+	send("🏁🐎Horseracing starts...🐎🚩")
 
 	while running and #HORSES > 1 and length > 0 do
 		task.wait(FRAME_DELAY)
-		round += 1
 
 		-- Atları karıştır
 		shuffle(HORSES)
@@ -50,11 +48,6 @@ local function startRace()
 		send(line .. " " .. track .. "🚩")
 
 		length -= 1
-
-		-- İlk round: sadece çekişme
-		if round == 1 then
-			continue
-		end
 
 		-- Son 2 at kalınca Final Duel başlat
 		if #HORSES == 2 then
@@ -70,7 +63,7 @@ local function startRace()
 			end
 		end
 
-		-- Eğer 2'den fazla varsa veya final round tamamlandıysa eleme yap
+		-- Eğer final duel bitmediyse eleme yap
 		if #HORSES > 1 then
 			table.remove(HORSES)
 		end
