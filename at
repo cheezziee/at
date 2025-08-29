@@ -1,124 +1,83 @@
---// Horse Race Show 🐴🚩🎰 + STOP Butonu
+-- Horse Race GUI Script
 local Players = game:GetService("Players")
 local TextChatService = game:GetService("TextChatService")
 local player = Players.LocalPlayer
-local channel = TextChatService.TextChannels.RBXGeneral
+local playerGui = player:WaitForChild("PlayerGui")
 
--- GUI'yi güvenli şekilde oluştur
-local player = game.Players.LocalPlayer
-local playerGui = player:WaitForChild("PlayerGui") -- hazır olana kadar bekler
-
-local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "HorseRaceGui"
-screenGui.ResetOnSpawn = false -- spawn olunca silinmesin
-screenGui.Parent = playerGui
-
--- Start buton
-local startBtn = Instance.new("TextButton")
-startBtn.Size = UDim2.new(0, 200, 0, 70)
-startBtn.Position = UDim2.new(0.5, -220, 0.8, 0)
-startBtn.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-startBtn.TextColor3 = Color3.fromRGB(255, 223, 0)
-startBtn.Text = "🎰 START RACE 🎲"
-startBtn.Font = Enum.Font.GothamBold
-startBtn.TextSize = 26
-startBtn.Parent = screenGui
-startBtn.AutoButtonColor = false
-startBtn.BorderSizePixel = 0
-
-local corner1 = Instance.new("UICorner")
-corner1.CornerRadius = UDim.new(0, 25)
-corner1.Parent = startBtn
-
-local stroke1 = Instance.new("UIStroke")
-stroke1.Thickness = 4
-stroke1.Color = Color3.fromRGB(255, 215, 0)
-stroke1.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-stroke1.Parent = startBtn
-
--- Stop buton
-local stopBtn = Instance.new("TextButton")
-stopBtn.Size = UDim2.new(0, 200, 0, 70)
-stopBtn.Position = UDim2.new(0.5, 20, 0.8, 0)
-stopBtn.BackgroundColor3 = Color3.fromRGB(60, 0, 0)
-stopBtn.TextColor3 = Color3.fromRGB(255, 100, 100)
-stopBtn.Text = "🛑 STOP RACE"
-stopBtn.Font = Enum.Font.GothamBold
-stopBtn.TextSize = 26
-stopBtn.Parent = screenGui
-stopBtn.AutoButtonColor = false
-stopBtn.BorderSizePixel = 0
-
-local corner2 = Instance.new("UICorner")
-corner2.CornerRadius = UDim.new(0, 25)
-corner2.Parent = stopBtn
-
-local stroke2 = Instance.new("UIStroke")
-stroke2.Thickness = 4
-stroke2.Color = Color3.fromRGB(200, 0, 0)
-stroke2.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-stroke2.Parent = stopBtn
-
--- Chat helper
+-- Chat'e mesaj gönderme
 local function send(msg)
+	local channel = TextChatService.TextChannels.RBXGeneral
 	channel:SendAsync(msg)
 end
 
--- Global kontrol
+-- At listesi
+local HORSES = {"🐴1","🐴2","🐴3","🐴4","🐴5"}
+local TRACK_LENGTH = 10 -- pist uzunluğu
+local FRAME_DELAY = 5 -- her frame gecikme
 local running = false
 
--- Yarış fonksiyonu
+-- Karıştırma fonksiyonu
+local function shuffle(t)
+	for i = #t, 2, -1 do
+		local j = math.random(i)
+		t[i], t[j] = t[j], t[i]
+	end
+end
+
+-- Yarışı başlat
 local function startRace()
 	if running then return end
 	running = true
+	local length = TRACK_LENGTH
 
-	local HORSES = {"🐴1","🐴2","🐴3","🐴4","🐴5"}
-	local TRACK_LENGTH = 10
-	local positions = {}
+	send("🏁Horseracing STARTS!!!🐎🚩")
 
-	for i = 1,#HORSES do
-		positions[i] = TRACK_LENGTH
-	end
+	while running and length > 0 do
+		task.wait(FRAME_DELAY)
 
-	send("🏁Horseracing STARTS!🐎🚩")
-
-	local winner = nil
-
-	while running and not winner do
-		task.wait(5)
-
-		-- Atların ilerlemesi
-		for i = 1,#HORSES do
-			if positions[i] > 0 then
-				positions[i] = math.max(0, positions[i] - math.random(1,3))
-				if positions[i] <= 0 and not winner then
-					winner = HORSES[i]
-				end
-			end
-		end
+		-- Atları karıştır
+		shuffle(HORSES)
 
 		-- Pist çiz
-		local lines = {}
-		for i = 1,#HORSES do
-			local track = string.rep("_", positions[i])
-			table.insert(lines, HORSES[i] .. " " .. track .. "🚩")
-		end
-		send(table.concat(lines, "\n"))
+		local line = table.concat(HORSES, "")
+		local track = string.rep("_", length)
+		send(line .. track .. "🚩")
+
+		length -= 1
 	end
 
-	elseif winner then
+	if running then
+		-- Kazanan en soldaki at
+		local winner = HORSES[1]
 		send("🏆 " .. winner .. " WINS THE RACE!!! 🏆")
 	end
 
 	running = false
 end
 
--- Stop fonksiyonu
-local function stopRace()
-	if running then
-		running = false
-	end
-end
+-- GUI oluştur
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "HorseRaceGui"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = playerGui
 
-startBtn.MouseButton1Click:Connect(startRace)
-stopBtn.MouseButton1Click:Connect(stopRace)
+local button = Instance.new("TextButton")
+button.Size = UDim2.new(0, 140, 0, 50)
+button.Position = UDim2.new(1, -160, 1, -70) -- sağ alt köşe
+button.BackgroundColor3 = Color3.fromRGB(255, 215, 0) -- altın renk
+button.Text = "🏇 Start Race"
+button.TextScaled = true
+button.Font = Enum.Font.FredokaOne
+button.TextColor3 = Color3.fromRGB(0,0,0)
+button.Parent = screenGui
+button.AutoButtonColor = true
+button.BorderSizePixel = 0
+button.BackgroundTransparency = 0
+button.TextStrokeTransparency = 0.3
+
+-- Buton tıklandığında yarışı başlat
+button.MouseButton1Click:Connect(function()
+	if not running then
+		startRace()
+	end
+end)
